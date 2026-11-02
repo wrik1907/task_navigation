@@ -1,0 +1,187 @@
+resume: false
+agent_config:
+  name: AGENT_5_BASELINE_EXP
+  action_space:
+    type: differential_drive
+    linear_range:
+      - -0.5
+      - 0.5
+    angular_range:
+      - -1.5
+      - 1.5
+  action_chunk: 1
+  mirror: none
+  framework:
+    name: stable_baselines3
+    algorithm:
+      type: PPO
+      architecture_name: AGENT_5
+      checkpoint: last_model
+      parameters:
+        batch_size: 64
+        clip_range: 0.2
+        clip_range_vf: null
+        device: cuda
+        ent_coef: 0.0
+        gae_lambda: 0.95
+        gamma: 0.99
+        learning_rate:
+          type: linear
+          kwargs:
+            initial_value: 0.001
+            final_value: 0.0001
+        max_grad_norm: 0.5
+        n_epochs: 5
+        n_steps: null
+        normalize_advantage: true
+        sde_sample_freq: -1
+        seed: 42
+        stats_window_size: 100
+        target_kl: 1.0
+        tensorboard_log: null
+        total_batch_size: 512
+        use_sde: false
+        verbose: 2
+        vf_coef: 0.22
+        total_timesteps: 100000
+      transfer_weights: null
+    normalization: null
+  parameters:
+    normalize: true
+    normalizer: max_abs
+  reward:
+    reward_unit_kwargs: null
+    verbose: 1
+    reward_function_dict:
+      goal_reached:
+        reward: 20
+        _follow_subgoal: false
+      safe_distance:
+        reward: -0.1
+      factored_safe_distance:
+        factor: -0.2
+      approach_goal:
+        pos_factor: 0.3
+        neg_factor: 0.4
+        _goal_update_threshold: 0.25
+        _follow_subgoal: true
+        _on_safe_dist_violation: true
+      collision:
+        reward: -15
+arena_cfg:
+  general:
+    debug_mode: false
+    goal_radius: 0.5
+    max_num_moves_per_eps: 600
+    n_envs: 2
+    n_timesteps: 100000
+    no_gpu: false
+    safety_distance: 1.0
+    show_progress_bar: false
+    control_hz: 10.0
+    env_seed: 42
+    env_launch_args: []
+  logging:
+    default_level: INFO
+    overrides:
+      rosnav_rl.observations: WARNING
+      rosnav_rl.reward: WARNING
+      rosnav_rl.spaces: WARNING
+    ros_level: WARNING
+    ros_overrides: {}
+  task:
+    tm_modules: staged
+    tm_obstacles: random
+    tm_robots: random
+    staged:
+      starting_stage: 1
+      threshold_type: succ
+      upper_threshold: 0.9
+      lower_threshold: 0.3
+      parameter_node_template: /arena/env_{i}/task_generator_node
+      timeout: 5.0
+      curriculum_definition:
+      - task.random.static.n:
+        - 0
+        - 0
+        task.random.interactive.n:
+        - 0
+        - 0
+        task.random.dynamic.n:
+        - 0
+        - 0
+        task.random.static.models: []
+        task.random.interactive.models: []
+        task.random.dynamic.models: []
+        task.episode.goto_pose.tolerance.radius: 1.5
+      - task.random.static.n:
+        - 2
+        - 4
+        task.random.interactive.n:
+        - 0
+        - 0
+        task.random.dynamic.n:
+        - 0
+        - 0
+        task.random.static.models:
+        - Hospital/SM_Chair_01a
+        - Hospital/SM_BedSideTable_01b
+        task.random.interactive.models: []
+        task.random.dynamic.models: []
+        task.episode.goto_pose.tolerance.radius: 1.2
+      - task.random.static.n:
+        - 3
+        - 5
+        task.random.interactive.n:
+        - 0
+        - 0
+        task.random.dynamic.n:
+        - 0
+        - 0
+        task.random.static.models:
+        - Hospital/SM_Chair_01a
+        - Hospital/SM_BedSideTable_01b
+        - Hospital/SM_TrashCan
+        task.random.interactive.models: []
+        task.random.dynamic.models: []
+        task.episode.goto_pose.tolerance.radius: 1.0
+      - task.random.static.n:
+        - 3
+        - 5
+        task.random.interactive.n:
+        - 0
+        - 0
+        task.random.dynamic.n:
+        - 1
+        - 3
+        task.random.static.models:
+        - Hospital/SM_Chair_01a
+        - Hospital/SM_BedSideTable_01b
+        - Hospital/SM_TrashCan
+        - Hospital/IV_Stand
+        task.random.interactive.models: []
+        task.random.dynamic.models:
+        - Common/Human/arenian
+        task.episode.goto_pose.tolerance.radius: 0.8
+  monitoring:
+    wandb:
+      enabled: false
+      project_name: Arena-RL
+      group: null
+      run_name: null
+      tags: null
+    episode_logging:
+      last_n_episodes: 25
+      record_actions: true
+    eval_metrics: false
+    training_metrics: true
+  callbacks:
+    periodic_evaluation:
+      eval_freq: 100000
+      max_num_moves_per_eps: 1200
+      n_eval_episodes: 20
+    stop_training_on_threshold:
+      threshold: 0.9
+      threshold_type: succ
+      verbose: 1
+  profiling: null

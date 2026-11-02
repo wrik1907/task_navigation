@@ -24,3 +24,17 @@ Overlay the files under `rosnav_rl/` onto the corresponding paths in
 the base ROSnav RL project, then use the experiment configuration.
 
 Base project: https://github.com/Arena-Rosnav/rosnav-rl
+
+## Training checkpoints and configurations
+
+The repository includes the final saved checkpoints and corresponding
+training configurations for three experiments:
+
+| Experiment | Checkpoint | Configuration |
+|---|---|---|
+| Baseline PPO | `models/baseline_ppo/last_model.zip` | `configs/baseline_ppo/training_config.yaml` |
+| Koopman PPO (lambda=0.01) | `models/koopman_l01/last_model.zip` | `configs/koopman_l01/training_config.yaml` |
+| MLP Auxiliary (lambda=0.01) | `models/mlp_aux_l01/last_model.zip` | `configs/mlp_aux_l01/training_config.yaml` |
+
+These are the saved `last_model.zip` checkpoints from the respective
+training runs, not intermediate checkpoints.
