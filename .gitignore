@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+data/
+logs/
+outputs/
+runs/
+checkpoints/
+wandb/
+*.tfevents*

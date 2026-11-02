@@ -1,0 +1,43 @@
+from typing import Any, Literal
+
+from sb3_contrib import TQC, TRPO, CrossQ, RecurrentPPO
+from stable_baselines3 import A2C, DDPG, PPO, SAC, TD3
+from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+from torch.nn.modules.module import Module
+from .koopman_ppo import KoopmanPPO, MLPAuxiliaryPPO
+from .recurrent import PackedRecurrentPPO
+
+POLICY_TYPE: dict[type[BaseAlgorithm], Literal["MultiInputPolicy", "MultiInputLstmPolicy"]] = {
+    # On-policy
+    PPO: "MultiInputPolicy",
+    KoopmanPPO: "MultiInputPolicy",
+    MLPAuxiliaryPPO: "MultiInputPolicy",
+    A2C: "MultiInputPolicy",
+    TRPO: "MultiInputPolicy",
+    RecurrentPPO: "MultiInputLstmPolicy",
+    PackedRecurrentPPO: "MultiInputLstmPolicy",
+    # Off-policy
+    SAC: "MultiInputPolicy",
+    TD3: "MultiInputPolicy",
+    DDPG: "MultiInputPolicy",
+    TQC: "MultiInputPolicy",
+    CrossQ: "MultiInputPolicy",
+}
+
+# Parsed as policy_kwargs to the SB3 algorithm class.
+# Keys present in this dict are extracted from StableBaselinesPolicyDescription
+# instances and forwarded to the SB3 Policy constructor.
+BASE_AGENT_ATTR = {
+    # Common policy kwargs
+    "features_extractor_class": type[BaseFeaturesExtractor] | None,
+    "features_extractor_kwargs": dict[str, Any] | None,
+    "net_arch": list[int] | dict[str, list[int]] | None,
+    "activation_fn": type[Module] | None,
+    # LSTM-specific (RecurrentPPO only — silently ignored for non-recurrent algos)
+    "n_lstm_layers": int,
+    "lstm_hidden_size": int,
+    "shared_lstm": bool,
+    "enable_critic_lstm": bool,
+    "lstm_kwargs": dict[str, Any] | None,
+}
